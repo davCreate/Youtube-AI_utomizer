@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+
+# Secrets and local state: never commit these
+client_secret*.json
+token*.json
+.yt-automizer/

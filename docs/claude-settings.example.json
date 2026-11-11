@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__youtube__channel_overview",
+      "mcp__youtube__list_recent_videos",
+      "mcp__youtube__performance_summary",
+      "mcp__youtube__revenue_report",
+      "mcp__youtube__analytics_query",
+      "mcp__youtube__list_comments",
+      "mcp__youtube__quota_status",
+      "mcp__youtube__audit_log",
+      "mcp__youtube__compliance_check"
+    ],
+    "ask": [
+      "mcp__youtube__search_youtube",
+      "mcp__youtube__research_niches",
+      "mcp__youtube__upload_video",
+      "mcp__youtube__publish_video",
+      "mcp__youtube__update_video_metadata",
+      "mcp__youtube__reply_to_comment"
+    ]
+  }
+}
