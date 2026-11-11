@@ -1,70 +1,71 @@
 # YouTube AI-utomizer
 
-An MCP server that connects **Claude Code** to **your YouTube channel**. Claude can read your
-stats and revenue, research niches, prepare and upload videos (private), and publish them
-when you approve. Policy guardrails are built in so an AI-assisted channel stays eligible for
-monetization.
+Conecta **Claude Code** con **tu canal de YouTube** desde tu PC. Claude puede ver tus
+estadísticas e ingresos, buscar nichos, preparar y subir vídeos (en privado) y publicarlos
+cuando tú lo apruebes, respetando las normas de YouTube sobre IA.
 
-> Monetization depends on YouTube, not on this tool. What it does is keep the process within
-> YouTube's rules: AI disclosure, no mass-produced "inauthentic content", COPPA, and human approval before anything goes public.
+## Instalación en PC (Windows)
 
-## What Claude can do
+1. Descarga este repositorio: botón verde **Code → Download ZIP**. Descomprímelo donde quieras.
+2. Haz **doble clic en `instalar.bat`**.
+   - Si no tienes Python, se abre la página de descarga. Instálalo marcando
+     **"Add python.exe to PATH"** y vuelve a hacer doble clic.
+3. Sigue los 4 pasos que salen en la ventana. Te abre cada página de Google, tú solo pulsas los
+   botones que te dice:
+   1. Crear el proyecto y activar las APIs de YouTube.
+   2. Pantalla de permisos (nombre y correo) → **Publicar app**.
+   3. Crear la clave (*App de escritorio*) → **Descargar JSON**. La ventana la encuentra sola en Descargas.
+   4. Elegir tu cuenta de YouTube. Si Google avisa de "app no verificada", es normal: es tu propia app.
+      Pulsa *Configuración avanzada → Ir a yt-automizer*.
+4. Abre Claude Code y escribe: *"Haz la revisión semanal de mi canal"*.
 
-| Area | Tools |
+El servidor queda registrado en Claude Code para **cualquier carpeta**, así que no hace falta
+abrir Claude Code dentro de este proyecto.
+
+**macOS / Linux:** `bash instalar.sh`. Los pasos son los mismos.
+
+### Si algo falla
+- Haz doble clic en `instalar.bat` otra vez, o ejecuta `.venv\Scripts\python -m yt_automizer doctor`.
+  Te dice qué falta y cómo arreglarlo.
+- Si la sesión de Google caduca, Claude Code abre el navegador solo para que vuelvas a entrar.
+- Si no tienes Claude Code instalado cuando haces la instalación, se crea un `.mcp.json` en esta
+  carpeta. Abre Claude Code aquí y acepta el servidor `youtube`.
+
+## Qué puede hacer Claude
+
+| Área | Herramientas |
 |---|---|
-| Stats | `channel_overview`, `list_recent_videos`, `performance_summary` (views, watch time, retention, Shorts vs long-form, traffic sources), `analytics_query` (any YouTube Analytics query: retention curves, demographics...) |
-| Money | `revenue_report` (estimated revenue, ad revenue, CPM, RPM, daily). Available once the channel is in YPP. |
-| Research | `search_youtube`, `research_niches` (0-100 score: demand × small channels winning × diversity, with outlier videos) |
-| Publishing | `compliance_check`, `upload_video` (always **private**), `publish_video` (needs `human_approved`, can schedule), `update_video_metadata` |
-| Community | `list_comments`, `reply_to_comment` |
-| Safety | `quota_status`, `audit_log` (every write, including previous metadata for rollback) |
-| Prompts | `weekly_review`, `find_niche` |
+| Estadísticas | `channel_overview`, `list_recent_videos`, `performance_summary` (visitas, tiempo de visualización, retención, Shorts frente a largos, fuentes de tráfico), `analytics_query` (cualquier consulta de YouTube Analytics) |
+| Dinero | `revenue_report`: ingresos estimados, CPM, RPM, día a día. Solo con el canal en YPP. |
+| Investigación | `search_youtube`, `research_niches`: puntuación de 0 a 100 según demanda y canales pequeños que triunfan, con vídeos de ejemplo |
+| Publicar | `compliance_check`, `upload_video` (siempre **privado**), `publish_video` (necesita tu aprobación; también puede programar), `update_video_metadata` |
+| Comunidad | `list_comments`, `reply_to_comment` |
+| Seguridad | `quota_status`, `audit_log` (todo lo que se cambia, con los valores antiguos para deshacer) |
+| Atajos | `weekly_review`, `find_niche` |
 
-Recommended: copy `docs/claude-settings.example.json` to `.claude/settings.json`. Then read-only
-tools run without prompts, and research (uses quota), uploads, publishing, edits and replies
-always ask for your confirmation.
+Opcional: copia `docs/claude-settings.example.json` a `.claude/settings.json` (o a
+`~/.claude/settings.json`). Así las consultas de solo lectura van sin preguntas, y subir,
+publicar, editar o responder siempre te pide confirmación.
 
-## Built-in policy checks (`src/yt_automizer/compliance.py`)
-- **Altered or synthetic content:** every upload must declare `contains_synthetic_media`. It is sent as
-  `status.containsSyntheticMedia` (YouTube Data API, since Oct 2024). It warns when the listed tools
-  (voice clones, AI video) suggest the content is realistic.
-- **Inauthentic content (YPP):** blocks uploads with no stated human contribution, uploads that are
-  near-duplicates of recent ones (3-gram similarity), and more than N uploads per 24h (default 3).
-- **Sensitive topics** (health, finance, news, elections) with AI involvement: warns to fact-check and cite sources.
-- **COPPA:** `made_for_kids` must be explicit.
-- **API limits:** title ≤ 100 chars, description ≤ 5000 bytes, tags ≤ 500 chars, Shorts ≤ 3 min.
+## Normas de YouTube integradas (`src/yt_automizer/compliance.py`)
+- **Contenido alterado o sintético:** cada subida declara `containsSyntheticMedia`, el campo de la
+  API desde octubre de 2024. Avisa si usas herramientas como clonación de voz o vídeo con IA y no lo declaras.
+- **Contenido "inauthentic" (YPP):** bloquea si no describes tu aportación humana, si el vídeo es
+  casi igual a uno reciente, o si se superan 3 subidas en 24 horas.
+- **Temas delicados** (salud, finanzas, noticias, elecciones) con IA: pide contrastar datos y citar fuentes.
+- **COPPA:** hay que indicar siempre si el vídeo es para niños.
+- **Límites de la API:** título hasta 100 caracteres, descripción hasta 5000 bytes, etiquetas hasta 500, Shorts hasta 3 minutos.
 
-You can change the thresholds in `~/.yt-automizer/settings.json`.
+Los umbrales se cambian en `~/.yt-automizer/settings.json`. Ahí se guardan también la sesión,
+el registro y la cuota, siempre en tu PC.
 
-## Setup (about 10 minutes)
+## A tener en cuenta
+- YouTube puede dejar en privado los vídeos subidos por la API desde un proyecto sin auditar.
+  Pide la [auditoría de la API](https://support.google.com/youtube/contact/yt_api_form) pronto;
+  mientras tanto, sube con la herramienta y publica desde YouTube Studio.
+- Cuota de 10.000 unidades al día: investigar una palabra clave gasta unas 100 y subir un vídeo unas 1.600.
 
-1. **Google Cloud project**: at <https://console.cloud.google.com/> create a project and enable
-   **YouTube Data API v3** and **YouTube Analytics API**.
-2. **OAuth consent screen**: External, add your Google account as a *test user*.
-3. **Credentials → Create OAuth client ID → Desktop app**. Download the JSON to
-   `~/.yt-automizer/client_secret.json`.
-4. Install and log in:
-   ```bash
-   python3 -m venv .venv
-   .venv/bin/pip install -e .
-   .venv/bin/yt-automizer auth      # opens the browser, choose the channel's account
-   .venv/bin/yt-automizer whoami    # check the right channel is connected
-   ```
-5. Open Claude Code in this folder. The `youtube` server in `.mcp.json` starts automatically
-   (run `/mcp` to check it). Try: *"Run the weekly review"* or *"Find me a niche: F1, aerodynamics, sports cars"*.
-
-On Windows, change `.mcp.json` `command` to `.venv\\Scripts\\yt-automizer.exe`.
-
-**Notes**
-- While the OAuth app is in "Testing" mode, refresh tokens expire after 7 days; run `yt-automizer auth` again,
-  or publish the app (personal use doesn't need Google verification for your own account).
-- Videos uploaded through an **unverified** API project may be locked as private by YouTube until the
-  project passes the [API compliance audit](https://support.google.com/youtube/contact/yt_api_form).
-  Request it early. Until then, upload with this tool and publish from Studio.
-- Data stays local: token, audit log and quota counter live in `~/.yt-automizer/` (override with `YT_AUTOMIZER_HOME`).
-
-## Development
+## Desarrollo
 ```bash
-.venv/bin/pip install -e '.[dev]'
-.venv/bin/pytest -q
+python -m venv .venv && .venv/bin/pip install -e '.[dev]' && .venv/bin/pytest -q
 ```

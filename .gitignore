@@ -10,3 +10,6 @@ dist/
 client_secret*.json
 token*.json
 .yt-automizer/
+
+# Written by `yt-automizer setup` with this PC's paths
+.mcp.json
