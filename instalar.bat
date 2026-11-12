@@ -19,8 +19,8 @@ echo Instalando dependencias...
 .venv\Scripts\python.exe -m pip install --quiet -e .
 if errorlevel 1 goto :error
 
-.venv\Scripts\python.exe -m yt_automizer setup
-pause
+echo Abriendo la app...
+start "" .venv\Scripts\pythonw.exe -m yt_automizer.app
 exit /b 0
 
 :nopython

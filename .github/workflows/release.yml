@@ -1,0 +1,59 @@
+name: Release
+
+# Push a tag like v0.2.0 and this builds the Windows app and publishes the release
+# that the app's "Buscar actualizaciones" button looks for.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: python -m pip install -e ".[dev,build]"
+
+      - name: Tests
+        run: python -m pytest -q
+
+      - name: Tag matches version
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          v=$(python -c "import yt_automizer; print(yt_automizer.__version__)")
+          [ "v$v" = "${GITHUB_REF_NAME}" ] || { echo "Tag ${GITHUB_REF_NAME} != __version__ $v"; exit 1; }
+
+      - name: Build exe
+        run: python packaging/build.py
+
+      - name: Smoke test MCP server
+        shell: bash
+        run: |
+          printf '%s\n' \
+            '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}' \
+            '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
+            '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' > req.txt
+          (cat req.txt; sleep 8) | timeout 30 dist/YouTube-AI-utomizer/yt-automizer-server.exe > out.txt || true
+          grep -q upload_video out.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: YouTube-AI-utomizer-windows
+          path: dist/YouTube-AI-utomizer-windows.zip
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/YouTube-AI-utomizer-windows.zip
+          generate_release_notes: true

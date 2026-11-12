@@ -1,0 +1,12 @@
+YouTube AI-utomizer
+===================
+
+1. Deja esta carpeta donde quieras tenerla (por ejemplo en Documentos). No la muevas después:
+   Claude Code guarda la ruta del servidor.
+2. Doble clic en "YouTube-AI-utomizer.exe".
+3. Pulsa "Configurar todo" y sigue los pasos.
+
+Para actualizar: abre la app y pulsa "Buscar actualizaciones" (cierra Claude Code antes).
+
+Si Windows muestra "Windows protegió su PC": pulsa "Más información" -> "Ejecutar de todas formas".
+Sale porque la app no está firmada con un certificado de pago, no porque tenga nada raro.

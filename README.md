@@ -4,32 +4,39 @@ Conecta **Claude Code** con **tu canal de YouTube** desde tu PC. Claude puede ve
 estadísticas e ingresos, buscar nichos, preparar y subir vídeos (en privado) y publicarlos
 cuando tú lo apruebes, respetando las normas de YouTube sobre IA.
 
+![La app](docs/app.png)
+
 ## Instalación en PC (Windows)
 
-1. Descarga este repositorio: botón verde **Code → Download ZIP**. Descomprímelo donde quieras.
-2. Haz **doble clic en `instalar.bat`**.
-   - Si no tienes Python, se abre la página de descarga. Instálalo marcando
-     **"Add python.exe to PATH"** y vuelve a hacer doble clic.
-3. Sigue los 4 pasos que salen en la ventana. Te abre cada página de Google, tú solo pulsas los
-   botones que te dice:
-   1. Crear el proyecto y activar las APIs de YouTube.
-   2. Pantalla de permisos (nombre y correo) → **Publicar app**.
-   3. Crear la clave (*App de escritorio*) → **Descargar JSON**. La ventana la encuentra sola en Descargas.
-   4. Elegir tu cuenta de YouTube. Si Google avisa de "app no verificada", es normal: es tu propia app.
-      Pulsa *Configuración avanzada → Ir a yt-automizer*.
-4. Abre Claude Code y escribe: *"Haz la revisión semanal de mi canal"*.
+1. Ve a **[Releases](https://github.com/davCreate/Youtube-AI_utomizer/releases/latest)** y descarga
+   `YouTube-AI-utomizer-windows.zip`. No necesitas instalar Python.
+2. Descomprímelo en una carpeta fija, por ejemplo `Documentos\YouTube-AI-utomizer`. No la muevas después.
+3. Doble clic en **`YouTube-AI-utomizer.exe`**.
+   - Si Windows avisa con «Windows protegió su PC»: pulsa *Más información → Ejecutar de todas formas*.
+     Sale porque la app no está firmada con un certificado de pago.
+4. Pulsa **«Configurar todo»**. La app te guía en 3 partes:
+   1. **Clave de Google** (5 pasos, unos 5 minutos): cada paso abre la página de Google y te dice qué
+      botón pulsar. La clave descargada se detecta sola en Descargas.
+   2. **Canal de YouTube**: eliges tu cuenta. Si Google avisa de «app no verificada», es normal:
+      es tu propia app. Pulsa *Configuración avanzada → Ir a yt-automizer*.
+   3. **Claude Code**: se conecta solo.
+5. Cuando los tres puntos estén en verde, abre Claude Code y escribe: *«Haz la revisión semanal de mi canal»*.
 
-El servidor queda registrado en Claude Code para **cualquier carpeta**, así que no hace falta
-abrir Claude Code dentro de este proyecto.
+### La app
 
-**macOS / Linux:** `bash instalar.sh`. Los pasos son los mismos.
+- **Estado**: un punto verde o rojo para la clave, el canal y Claude Code, cada uno con su botón para arreglarlo.
+- **Buscar actualizaciones**: mira la última versión en Releases. Si hay una nueva, te enseña las
+  novedades y se actualiza con un clic (cierra Claude Code antes). También lo comprueba sola al abrirse.
+- **Atajos**: YouTube Studio, carpeta de datos y volver a comprobar el estado.
+
+### Sin el .exe (desde el código)
+Doble clic en `instalar.bat` (Windows) o `bash instalar.sh` (macOS/Linux). Necesita Python 3.10 o
+superior, instala todo y abre la misma app. El botón de actualizar también funciona en este modo.
 
 ### Si algo falla
-- Haz doble clic en `instalar.bat` otra vez, o ejecuta `.venv\Scripts\python -m yt_automizer doctor`.
-  Te dice qué falta y cómo arreglarlo.
+- Abre la app y pulsa «Comprobar de nuevo». Cada punto rojo tiene su botón para arreglarlo.
+- Desde una terminal: `yt-automizer-server.exe doctor`.
 - Si la sesión de Google caduca, Claude Code abre el navegador solo para que vuelvas a entrar.
-- Si no tienes Claude Code instalado cuando haces la instalación, se crea un `.mcp.json` en esta
-  carpeta. Abre Claude Code aquí y acepta el servidor `youtube`.
 
 ## Qué puede hacer Claude
 
@@ -68,4 +75,12 @@ el registro y la cuota, siempre en tu PC.
 ## Desarrollo
 ```bash
 python -m venv .venv && .venv/bin/pip install -e '.[dev]' && .venv/bin/pytest -q
+.venv/bin/pip install -e '.[build]' && .venv/bin/python packaging/build.py   # genera los ejecutables
 ```
+
+### Publicar una versión nueva
+1. Sube el número en `src/yt_automizer/__init__.py` y `pyproject.toml` (por ejemplo, `0.3.0`).
+2. `git tag v0.3.0 && git push origin v0.3.0`
+3. GitHub Actions (`.github/workflows/release.yml`) pasa los tests, compila el `.exe` en Windows,
+   comprueba que el servidor responde y publica la Release con el zip. A partir de ahí,
+   «Buscar actualizaciones» la encuentra en todos los PCs.

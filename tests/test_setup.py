@@ -26,3 +26,10 @@ def test_nothing_found(tmp_path):
 
 def test_mcp_command_uses_this_python():
     assert mcp_command() == [sys.executable, "-m", "yt_automizer", "serve"]
+
+
+def test_mcp_command_when_packaged(monkeypatch, tmp_path):
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    monkeypatch.setattr(sys, "executable", str(tmp_path / "YouTube-AI-utomizer.exe"))
+    (cmd,) = mcp_command()
+    assert cmd.startswith(str(tmp_path)) and "yt-automizer-server" in cmd

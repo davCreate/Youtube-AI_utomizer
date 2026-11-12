@@ -7,4 +7,4 @@ if [ -z "$PY" ]; then echo "Instala Python 3.10+ desde https://www.python.org/do
 [ -d .venv ] || "$PY" -m venv .venv
 .venv/bin/python -m pip install --quiet --upgrade pip
 .venv/bin/python -m pip install --quiet -e .
-.venv/bin/python -m yt_automizer setup
+.venv/bin/python -m yt_automizer.app

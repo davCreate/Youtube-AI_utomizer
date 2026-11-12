@@ -21,7 +21,7 @@ def doctor() -> int:
 
     print("Comprobando la instalación...")
     line(sys.version_info >= (3, 10), f"Python {sys.version.split()[0]}", "Instala Python 3.10 o superior")
-    line(config.client_secret_path().exists(), "Clave de Google (client_secret.json)", "Ejecuta: yt-automizer setup")
+    line(config.client_secret_path().exists(), "Clave de Google (client_secret.json)", "Abre la app y pulsa «Configurar todo»")
     try:
         yt, an = auth.build_clients()
         from .config import load_settings
@@ -30,11 +30,11 @@ def doctor() -> int:
         info = YouTubeService(yt, an, load_settings()).channel_overview()
         line(True, f"Canal conectado: {info['title']}")
     except Exception as exc:
-        line(False, f"Conexión con YouTube ({exc})", "Ejecuta: yt-automizer setup")
+        line(False, f"Conexión con YouTube ({exc})", "Abre la app y pulsa «Configurar todo»")
     claude = shutil.which("claude")
     if claude:
         res = subprocess.run([claude, "mcp", "get", "youtube"], capture_output=True, text=True)
-        line(res.returncode == 0, "Servidor 'youtube' registrado en Claude Code", "Ejecuta: yt-automizer setup")
+        line(res.returncode == 0, "Servidor 'youtube' registrado en Claude Code", "Abre la app y pulsa «Configurar todo»")
     else:
         line(False, "Comando 'claude' (Claude Code) no encontrado",
              "Instala Claude Code: https://claude.com/claude-code (o usa el .mcp.json de esta carpeta)")
@@ -44,7 +44,8 @@ def doctor() -> int:
 
 def main(argv: list[str] | None = None) -> None:
     p = argparse.ArgumentParser(prog="yt-automizer")
-    sub = p.add_subparsers(dest="cmd", required=True)
+    sub = p.add_subparsers(dest="cmd")
+    sub.add_parser("app", help="Abrir la app de escritorio (por defecto)")
     s = sub.add_parser("setup", help="Instalación guiada (una sola vez)")
     s.add_argument("--redo", action="store_true", help="Repetir también los pasos de Google Cloud")
     sub.add_parser("doctor", help="Comprobar que todo está conectado")
@@ -53,7 +54,11 @@ def main(argv: list[str] | None = None) -> None:
     sub.add_parser("serve", help="Servidor MCP (Claude Code lo arranca solo)")
     args = p.parse_args(argv)
 
-    if args.cmd == "setup":
+    if args.cmd in (None, "app"):
+        from .app import main as app
+
+        app()
+    elif args.cmd == "setup":
         from .setup_wizard import run
 
         run(force=args.redo)

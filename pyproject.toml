@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "yt-automizer"
-version = "0.1.0"
+version = "0.2.0"
 description = "MCP server that connects Claude Code to your YouTube channel: analytics, niche research, policy-compliant uploads."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -17,9 +17,13 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+build = ["pyinstaller>=6.10"]
 
 [project.scripts]
 yt-automizer = "yt_automizer.cli:main"
+
+[project.gui-scripts]
+yt-automizer-app = "yt_automizer.app:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

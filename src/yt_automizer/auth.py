@@ -68,14 +68,14 @@ def load_credentials(allow_browser_login: bool = True) -> Credentials:
         return creds
     if allow_browser_login and config.client_secret_path().exists():
         return run_login_flow(timeout_seconds=300)
-    raise NotAuthenticated("YouTube no está conectado. Ejecuta `yt-automizer setup` (o haz doble clic en instalar).")
+    raise NotAuthenticated("YouTube no está conectado. Abre la app YouTube AI-utomizer y pulsa «Configurar todo».")
 
 
-def build_clients():
+def build_clients(allow_browser_login: bool = True):
     """Return (youtube_data_v3, youtube_analytics_v2) API resources."""
     from googleapiclient.discovery import build
 
-    creds = load_credentials()
+    creds = load_credentials(allow_browser_login)
     youtube = build("youtube", "v3", credentials=creds, cache_discovery=False)
     analytics = build("youtubeAnalytics", "v2", credentials=creds, cache_discovery=False)
     return youtube, analytics
